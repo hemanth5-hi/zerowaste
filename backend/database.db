@@ -1,0 +1,51 @@
+-- SQLite database schema for ZeroWaste app
+
+-- Enable foreign key constraints
+PRAGMA foreign_keys = ON;
+
+-- Food listings table
+CREATE TABLE IF NOT EXISTS food_listing (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    quantity TEXT NOT NULL,
+    expiry_date TEXT NOT NULL,
+    location TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    contact TEXT NOT NULL,
+    posted_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_claimed BOOLEAN DEFAULT 0
+);
+
+-- Users table
+CREATE TABLE IF NOT EXISTS user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    food_saved INTEGER DEFAULT 0,
+    co2_saved REAL DEFAULT 0.0
+);
+
+-- Sample data for food listings
+INSERT INTO food_listing (title, description, quantity, expiry_date, location, latitude, longitude, contact, posted_date, is_claimed) VALUES
+('Fresh Apples', 'Organic apples from local farm, perfectly good', '5 kg', '2023-12-15', '123 Main St, New York, NY', 40.7128, -74.0060, 'john@example.com', '2023-11-01 10:00:00', 0),
+('Homemade Bread', 'Freshly baked whole wheat bread', '2 loaves', '2023-11-05', '456 Oak Ave, Brooklyn, NY', 40.6782, -73.9442, 'sarah@example.com', '2023-11-02 15:30:00', 1),
+('Vegetables Box', 'Assorted seasonal vegetables', '1 box', '2023-11-10', '789 Pine St, Queens, NY', 40.7282, -73.7949, 'mike@example.com', '2023-11-03 09:15:00', 0),
+('Dairy Products', 'Milk, cheese, and yogurt', 'Various', '2023-11-08', '321 Elm Blvd, Bronx, NY', 40.8448, -73.8648, 'lisa@example.com', '2023-11-04 14:45:00', 0),
+('Canned Goods', 'Non-perishable food items', '10 cans', '2024-06-01', '654 Maple Dr, Staten Island, NY', 40.5795, -74.1502, 'david@example.com', '2023-11-05 11:20:00', 1);
+
+-- Sample user data
+INSERT INTO user (username, email, password, food_saved, co2_saved) VALUES
+('foodsaver1', 'user1@example.com', 'hashed_password_1', 15, 37.5),
+('ecofriendly', 'user2@example.com', 'hashed_password_2', 8, 20.0),
+('zerowaster', 'user3@example.com', 'hashed_password_3', 25, 62.5);
+
+-- Add address fields to user table
+ALTER TABLE user ADD COLUMN address TEXT;
+ALTER TABLE user ADD COLUMN city TEXT;
+ALTER TABLE user ADD COLUMN state TEXT;
+ALTER TABLE user ADD COLUMN zip_code TEXT;
+ALTER TABLE user ADD COLUMN latitude REAL;
+ALTER TABLE user ADD COLUMN longitude REAL;
