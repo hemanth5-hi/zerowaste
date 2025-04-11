@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroWaste | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #8BC34A;
+            --dark: #1B5E20;
+            --light: #C8E6C9;
+            --white: #FFFFFF;
+            --light-gray: #F5F7FA;
+            --medium-gray: #E1E5EE;
+            --dark-gray: #6B7280;
+            --error: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray);
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--white);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100%;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-collapsed {
+            width: 80px;
+        }
+
+        .sidebar-collapsed .logo span,
+        .sidebar-collapsed .nav-text,
+        .sidebar-collapsed .user-name,
+        .sidebar-collapsed .user-email {
+            display: none;
+        }
+
+        .sidebar-collapsed .logo {
+            justify-content: center;
+        }
+
+        .sidebar-collapsed .nav-item {
+            justify-content: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--dark-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-badge {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary);
+            color: white;
+            border-radius: 20px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .user-panel {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--medium-gray);
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+
+        .toggle-sidebar {
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            background: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+        }
+
+        .main-content-expanded {
+            margin-left: 80px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .search-bar {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background-color: var(--light-gray);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn, .message-btn {
+            position: relative;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            cursor: pointer;
+        }
+
+        .notification-badge, .message-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--error);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .message-badge {
+            background-color: var(--primary);
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .page-title p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--light);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+        .stat-card.food::before {
+            background-color: var(--success);
+        }
+
+        .stat-card.co2::before {
+            background-color: var(--warning);
+        }
+
+        .stat-card.impact::before {
+            background-color: var(--primary);
+        }
+
+        .stat-card.users::before {
+            background-color: #3B82F6;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-card.food .stat-icon {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .stat-card.co2 .stat-icon {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-card.impact .stat-icon {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-card.users .stat-icon {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-title {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        /* Charts */
+        .chart-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Recent Activity */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .activity-icon.food {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .activity-icon.claim {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .activity-icon.user {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-content p {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+            text-align: right;
+            min-width: 80px;
+        }
+
+        /* Food Listings Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .data-table th {
+            background-color: var(--primary);
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--light-gray);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-claimed {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .status-expired {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .action-btn {
+            padding: 0.3rem 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-right: 0.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn i {
+            pointer-events: none;
+        }
+
+        .edit-btn {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+
+        .edit-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .delete-btn {
+            background-color: var(--error);
+            color: var(--white);
+        }
+
+        .delete-btn:hover {
+            background-color: #DC2626;
+        }
+
+        .view-btn {
+            background-color: #3B82F6;
+            color: var(--white);
+        }
+
+        .view-btn:hover {
+            background-color: #2563EB;
+        }
+
+        /* Map Card */
+        .map-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            height: 400px;
+        }
+
+        .map-container {
+            height: 100%;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar .logo span,
+            .sidebar .nav-text,
+            .sidebar .user-name,
+            .sidebar .user-email {
+                display: none;
+            }
+            
+            .sidebar .logo {
+                justify-content: center;
+            }
+            
+            .sidebar .nav-item {
+                justify-content: center;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .search-bar {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="toggle-sidebar" id="toggleSidebar">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        
+        <div class="logo">
+            <i class="fas fa-recycle"></i>
+            <span>ZeroWaste</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-utensils"></i>
+                    <span class="nav-text">My Listings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="nav-text">Food Map</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span class="nav-text">Transactions</span>
+                    <span class="nav-badge">3</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">Community</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="user-panel">
+            <div class="user-avatar">
+                <img src="data:image/png;base64,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 " alt="User">
+            </div>
+            <div class="user-info">
+                <div class="user-name">BYTE-CODED</div>
+                <div class="user-email">bytecoded@gmail.com</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="user-actions">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </button>
+                <button class="message-btn">
+                    <i class="fas fa-envelope"></i>
+                    <span class="message-badge">2</span>
+                </button>
+                <div class="user-avatar">
+                    <img src="data:image/png;base64,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 " alt="User">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <h1>Welcome back, BYTE-CODED</h1>
+                    <p>Here's what's happening with ZeroWaste today</p>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Share Food
+                </button>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card food">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">58 kg</div>
+                            <div class="stat-title">Food Saved</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 12% from last week
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card co2">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">0 kg</div>
+                            <div class="stat-title">CO₂ Prevented</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 0% from last week
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card impact">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">0</div>
+                            <div class="stat-title">People Helped</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 0 new this week
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card users">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">156</div>
+                            <div class="stat-title">Community Members</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i> 5 new this week
+                            </div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="grid-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <!-- Food Sharing Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-title">Food Sharing Activity</div>
+                        <div class="card-actions">
+                            <select class="form-control" style="width: auto; padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                                <option>Last 90 Days</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart would be rendered here with Chart.js or similar -->
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--dark-gray);">
+                            <i class="fas fa-chart-bar" style="font-size: 2rem; margin-right: 1rem;"></i>
+                            Food Sharing Chart
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-title">Recent Activity</div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+                                View All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-icon food">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>New Listing Added</h4>
+                                <p>Fresh vegetables from local market</p>
+                            </div>
+                            <div class="activity-time">2h ago</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon claim">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Listing Claimed</h4>
+                                <p>Someone claimed your bread donation</p>
+                            </div>
+                            <div class="activity-time">1d ago</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon user">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>New Follower</h4>
+                                <p>hemanth started following you</p>
+                            </div>
+                            <div class="activity-time">2d ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map and Listings Row -->
+            <div class="grid-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Food Map -->
+                <div class="map-card">
+                    <div class="card-header">
+                        <div class="card-title">Food Availability Map</div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <i class="fas fa-map-marked-alt" style="font-size: 2rem; margin-right: 1rem;"></i>
+                        Interactive Food Map
+                    </div>
+                </div>
+                
+                <!-- Recent Listings -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-title">Your Recent Listings</div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+                                View All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Fresh Apples (5kg)</td>
+                                    <td><span class="status-badge status-available">Available</span></td>
+                                    <td>
+                                        <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Homemade Bread (2 loaves)</td>
+                                    <td><span class="status-badge status-claimed">Claimed</span></td>
+                                    <td>
+                                        <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Vegetables Box</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td>
+                                        <button class="action-btn view-btn"><i class="fas fa-eye"></i></button>
+                                        <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Dairy Products</td>
+                                    <td><span class="status-badge status-expired">Expired</span></td>
+                                    <td>
+                                        <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+      
+<div class="chart-card">
+    <div class="card-header">
+        <div class="card-title">My Food Claims</div>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table" id="claimsTable">
+            <thead>
+                <tr>
+                    <th>Food Item</th>
+                    <th>Quantity</th>
+                    <th>Donor</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle sidebar
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-collapsed');
+                mainContent.classList.toggle('main-content-expanded');
+                
+                // Change icon
+                const icon = toggleSidebar.querySelector('i');
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                }
+            });
+            
+            // Simulate chart loading
+            setTimeout(() => {
+                console.log('Charts would be loaded here with Chart.js');
+            }, 1000);
+            
+            // Simulate map loading
+            setTimeout(() => {
+                console.log('Map would be loaded here with Google Maps or Leaflet');
+            }, 1500);
+            
+            // Notification button
+            document.querySelector('.notification-btn').addEventListener('click', function() {
+                alert('Notifications panel would open here');
+            });
+            
+            // Message button
+            document.querySelector('.message-btn').addEventListener('click', function() {
+                alert('Messages panel would open here');
+            });
+        });
+    </script>
+</body>
+</html>
